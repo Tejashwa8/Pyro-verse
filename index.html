@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python Quest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="starfield" aria-hidden="true"></canvas>
+    <div class="scanline" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#map" aria-label="Python Quest home">
+          <span class="brand-mark">
+            <svg viewBox="0 0 80 80" role="img" aria-label="Python Quest logo">
+              <defs>
+                <linearGradient id="logoGlow" x1="10" y1="10" x2="70" y2="70">
+                  <stop stop-color="#9fd8c0" />
+                  <stop offset="1" stop-color="#8db8d6" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M40 7 66 19v21c0 15-10 28-26 34C24 68 14 55 14 40V19L40 7Z"
+                fill="#0b1d2a"
+                stroke="url(#logoGlow)"
+                stroke-width="4"
+              />
+              <path
+                d="M30 25h17c6 0 10 4 10 10s-4 10-10 10H33c-5 0-8 3-8 7s3 7 8 7h18"
+                fill="none"
+                stroke="url(#logoGlow)"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <circle cx="34" cy="25" r="2.8" fill="#dff7ed" />
+              <path d="M48 52h10" stroke="#dff7ed" stroke-width="3" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span>
+            <strong>Python Quest</strong>
+          </span>
+        </a>
+
+        <nav class="mode-tabs" aria-label="Game modes">
+          <button class="tab active" data-mode="Story">Story</button>
+          <button class="tab" data-mode="Survival">Survival</button>
+          <button class="tab" data-mode="Boss Raid">Boss Raid</button>
+          <button class="tab" data-mode="Arena">Arena</button>
+          <button class="tab" data-mode="Debug Dungeon">Debug</button>
+        </nav>
+
+        <section class="player-strip" aria-label="Player progress">
+          <div>
+            <span class="eyebrow">Rank</span>
+            <strong id="rankLabel">Code Beginner</strong>
+          </div>
+          <div class="xp-meter" aria-label="XP progress">
+            <span id="xpFill"></span>
+          </div>
+          <div class="stat-pill"><span id="xpValue">0</span> XP</div>
+          <div class="stat-pill"><span id="streakValue">1</span> day</div>
+        </section>
+      </header>
+
+      <section class="hero-console" id="map">
+        <div class="hero-copy">
+          <p class="eyebrow">Campaign Active</p>
+          <h1>Enter the Python Universe</h1>
+          <p>
+            Repair corrupted worlds with code, unlock powers through missions,
+            and let Pyro guide each concept from idea to execution.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="continueBtn">Continue Quest</button>
+          </div>
+        </div>
+        <div class="pyro-stage" aria-live="polite">
+          <div class="pyro-aura"></div>
+          <div class="pyro" id="pyro">
+            <span class="pyro-eye left"></span>
+            <span class="pyro-eye right"></span>
+            <span class="pyro-mouth"></span>
+          </div>
+          <div class="speech" id="pyroSpeech">
+            I am Pyro. Choose a world and we will debug the chaos together.
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <aside class="panel mission-panel">
+          <div class="panel-title">
+            <span class="eyebrow">Daily Missions</span>
+            <strong id="modeLabel">Story Mode</strong>
+          </div>
+          <ul class="mission-list" id="missionList"></ul>
+          <div class="task-store">
+            <div class="panel-title compact-title">
+              <span class="eyebrow">Task Storage</span>
+              <button class="ghost-btn" id="saveTaskBtn">Save Task</button>
+            </div>
+            <div class="task-list" id="taskList"></div>
+          </div>
+          <div class="inventory">
+            <span class="eyebrow">Collectibles</span>
+            <div id="collectibles"></div>
+          </div>
+        </aside>
+
+        <section class="world-map" aria-label="Python worlds">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">World Map</span>
+              <h2>Six Worlds, One Hero Path</h2>
+            </div>
+            <div class="combo-chip">Combo x<span id="comboValue">1</span></div>
+          </div>
+          <div class="world-grid" id="worldGrid"></div>
+        </section>
+
+        <aside class="panel skill-panel">
+          <div class="panel-title">
+            <span class="eyebrow">Skill Tree</span>
+            <strong>Unlocked Powers</strong>
+          </div>
+          <div class="skill-tree" id="skillTree"></div>
+          <div class="badges" id="badges"></div>
+          <div class="history-panel">
+            <div class="panel-title compact-title">
+              <span class="eyebrow">History</span>
+              <button class="ghost-btn danger-btn" id="resetBtn">Reset</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="quest-board" id="questBoard">
+        <div class="quest-visual" id="questVisual">
+          <div class="memory-bank" id="memoryBank"></div>
+          <div class="logic-gate"></div>
+          <div class="floating-code" id="floatingCode">print("Hello, Quest!")</div>
+        </div>
+
+        <article class="lesson-panel">
+          <div class="lesson-head">
+            <span class="eyebrow" id="lessonWorld">Forest of Variables</span>
+            <h2 id="lessonTitle">Variables</h2>
+          </div>
+          <div class="stage-strip" id="stageStrip" aria-label="Topic stages"></div>
+          <div class="lesson-steps" role="tablist" aria-label="Lesson steps">
+            <button class="step active" data-step="learn">Learn</button>
+            <button class="step" data-step="watch">Watch</button>
+            <button class="step" data-step="try">Try</button>
+            <button class="step" data-step="feedback">Feedback</button>
+          </div>
+          <div class="lesson-card" id="lessonCard"></div>
+        </article>
+
+        <article class="code-panel">
+          <div class="code-toolbar">
+            <span class="eyebrow">Python Simulator</span>
+            <div>
+              <button class="ghost-btn" id="hintBtn">Hint</button>
+              <button class="run-btn" id="runBtn">Run</button>
+            </div>
+          </div>
+          <div class="practice-brief" id="practiceBrief"></div>
+          <textarea id="codeEditor" spellcheck="false" aria-label="Python code editor"></textarea>
+          <div class="runtime-grid">
+            <div>
+              <span class="eyebrow">Output</span>
+              <pre id="outputBox"></pre>
+            </div>
+            <div>
+              <span class="eyebrow">Memory</span>
+              <div class="memory-list" id="runtimeMemory"></div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div>
+              <span class="eyebrow">Line-by-line tutor</span>
+              <div id="lineExplanation"></div>
+            </div>
+            <div>
+              <span class="eyebrow">Player analytics</span>
+              <div class="analytics-grid" id="analyticsGrid"></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

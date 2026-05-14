@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0.0",
+  "staticData": {
+    "worlds": [
+      {
+        "id": "forest",
+        "title": "Forest of Variables",
+        "topics": ["print()", "variables", "strings", "integers", "floats", "input()", "data types"],
+        "theme": "A glowing cyber forest powered by data crystals.",
+        "miniGames": ["Variable Match Puzzle", "Print Output Runner", "Type Identifier Race"],
+        "boss": "Bug Beast",
+        "xpReward": 50
+      },
+      {
+        "id": "kingdom",
+        "title": "Kingdom of Conditions",
+        "topics": ["if", "else", "elif", "logical operators", "comparison operators"],
+        "theme": "A futuristic kingdom where logic controls doors, traps, and machines.",
+        "miniGames": ["True/False Arena", "Logic Bridge Puzzle", "Conditional Escape Room"],
+        "boss": "False King",
+        "xpReward": 70
+      },
+      {
+        "id": "loop",
+        "title": "Loop Dimension",
+        "topics": ["for loops", "while loops", "nested loops", "range()"],
+        "theme": "A time dimension controlled by repeated actions.",
+        "miniGames": ["Infinite Runner Loop", "Repeat Pattern Builder", "Loop Escape Challenge"],
+        "boss": "Infinite Bug",
+        "xpReward": 90
+      },
+      {
+        "id": "temple",
+        "title": "Temple of Functions",
+        "topics": ["functions", "parameters", "arguments", "return values", "scope"],
+        "theme": "Ancient cyber temples powered by reusable code spells.",
+        "miniGames": ["Function Forge", "Scope Maze", "Return Value Puzzle"],
+        "boss": "Shadow Compiler",
+        "xpReward": 110
+      },
+      {
+        "id": "city",
+        "title": "Data City",
+        "topics": ["lists", "dictionaries", "tuples", "sets", "indexing"],
+        "theme": "A futuristic city powered by data structures.",
+        "miniGames": ["Inventory Sort Challenge", "Dictionary Decoder", "List Battle Arena"],
+        "boss": "Data Corruptor",
+        "xpReward": 130
+      },
+      {
+        "id": "oop",
+        "title": "OOP Universe",
+        "topics": ["classes", "objects", "inheritance", "encapsulation", "constructors"],
+        "theme": "A robotic sci-fi universe where players build AI warriors.",
+        "miniGames": ["Build-a-Bot", "Class Constructor Lab", "Inheritance Arena"],
+        "boss": "Object Overlord",
+        "xpReward": 150
+      }
+    ]
+  },
+  "lessonTemplate": {
+    "title": "Variables",
+    "lesson": "Variables store values.",
+    "challengeType": "drag-drop",
+    "xpReward": 50,
+    "steps": ["learn", "watch", "try", "feedback"],
+    "topicStages": [
+      "tutorial",
+      "guided-practice",
+      "memory-update",
+      "concept-combo",
+      "input-practice",
+      "type-conversion",
+      "mini-coding-mission",
+      "debug-stage",
+      "speed-coding",
+      "boss-mastery"
+    ],
+    "practiceEngine": {
+      "judgeMode": "beginner-friendly-code-check",
+      "hintLevels": ["small-hint", "medium-hint", "full-explanation", "show-solution"],
+      "lineExplanation": true,
+      "tracks": ["attempts", "retries", "accuracy", "weakConcepts", "codingSpeed", "solvedStages"]
+    },
+    "assets": {
+      "cinematicIntro": "cloudinary://python-quest/worlds/forest/intro.webm",
+      "environment": "cloudinary://python-quest/worlds/forest/environment.glb",
+      "soundtrack": "cloudinary://python-quest/audio/forest-theme.mp3"
+    }
+  },
+  "dynamicData": {
+    "userProgress": "postgresql: user_progress table",
+    "liveXp": "redis: leaderboard and combo counters",
+    "authentication": "firebase: Google and GitHub login",
+    "analytics": "events: lesson_started, challenge_answered, boss_defeated",
+    "adaptiveLearning": "model: choose next challenge by accuracy, retries, response time, and hint usage"
+  },
+  "masterySystem": {
+    "ranks": ["Beginner", "Learner", "Skilled", "Advanced", "Master"],
+    "unlockables": ["badges", "skins", "powers", "secret worlds", "mini projects"],
+    "worldProjects": {
+      "forest": "calculator",
+      "kingdom": "age checker",
+      "loop": "number guessing game",
+      "temple": "battle simulator",
+      "city": "inventory manager",
+      "oop": "mini RPG using OOP"
+    }
+  }
+}
