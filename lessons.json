@@ -106,5 +106,19 @@
       "city": "inventory manager",
       "oop": "mini RPG using OOP"
     }
+  },
+  "aiAutomationSystems": {
+    "n8n": {
+      "uses": ["daily quest automation", "XP reward routing", "leaderboard updates", "streak reminders", "achievement notifications"],
+      "events": ["challenge_started", "challenge_solved", "boss_defeated", "badge_unlocked", "streak_missed"]
+    },
+    "langChain": {
+      "chains": ["code analysis", "progressive hints", "line explanations", "challenge generation", "debug assistance"],
+      "outputs": ["hint", "explanation", "correction", "mission_json"]
+    },
+    "langGraph": {
+      "memory": ["weak topics", "retry frequency", "coding patterns", "learning speed", "practice habits"],
+      "nodes": ["observe_attempt", "classify_mistake", "update_memory", "select_next_action", "generate_mission", "evaluate_mastery"]
+    }
   }
 }

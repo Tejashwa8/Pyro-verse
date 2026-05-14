@@ -156,6 +156,21 @@ const missions = [
   ["Mini Project", "Build the world project after level 10"],
 ];
 
+const automationNodes = [
+  ["Trigger", "Daily quest starts"],
+  ["n8n", "Route event"],
+  ["LangChain", "Tutor analyzes code"],
+  ["LangGraph", "Update learning memory"],
+  ["Reward", "XP, badge, reminder"],
+];
+
+const aiMissionTemplates = [
+  "Generate a revision quest for {weak} with one small coding task and one debug task.",
+  "Create an adaptive boss fight that uses {weak} and rewards careful retries.",
+  "Build an automation puzzle where n8n sends XP after a correct {weak} challenge.",
+  "Design a LangChain tutor prompt that explains a {weak} mistake in beginner words.",
+];
+
 const stageTemplates = [
   ["Tutorial", "Read the concept and run the starter code.", "guided"],
   ["Guided Practice", "Edit one line to satisfy the objective.", "write"],
@@ -280,6 +295,7 @@ const fallbackProgress = {
   solvedStages: [],
   history: [],
   savedTasks: [],
+  aiMissions: [],
   badges: [],
   collectibles: ["DATA-01"],
   hintLevels: {},
@@ -327,6 +343,7 @@ function loadState() {
       currentStage: { ...fallbackProgress.currentStage, ...(parsed.currentStage ?? {}) },
       history: parsed.history ?? [],
       savedTasks: parsed.savedTasks ?? [],
+      aiMissions: parsed.aiMissions ?? [],
       stats: {
         ...fallbackProgress.stats,
         ...(parsed.stats ?? {}),
@@ -353,6 +370,7 @@ function freshProgress() {
     solvedStages: [],
     history: [],
     savedTasks: [],
+    aiMissions: [],
     badges: [],
     collectibles: ["DATA-01"],
     hintLevels: {},
@@ -438,6 +456,65 @@ function renderSavedTasks() {
   document.querySelectorAll("[data-load-task]").forEach((button) => {
     button.addEventListener("click", () => loadSavedTask(Number(button.dataset.loadTask)));
   });
+}
+
+function renderAiLab() {
+  $("#workflowMap").innerHTML = automationNodes
+    .map(
+      ([title, body], index) => `
+        <div class="workflow-node">
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml(body)}</span>
+          ${index < automationNodes.length - 1 ? "<i></i>" : ""}
+        </div>
+      `,
+    )
+    .join("");
+
+  const weak = bestConcept(true);
+  const practice = getPractice();
+  $("#chainOutput").innerHTML = `
+    <div class="agent-line"><strong>Input</strong><span>${escapeHtml(practice.objective)}</span></div>
+    <div class="agent-line"><strong>Analysis</strong><span>Check code structure, missing concepts, output, and memory state.</span></div>
+    <div class="agent-line"><strong>Tutor Reply</strong><span>${escapeHtml(practice.hint)}</span></div>
+  `;
+  $("#graphOutput").innerHTML = `
+    <div class="agent-line"><strong>Weak topic</strong><span>${escapeHtml(weak)}</span></div>
+    <div class="agent-line"><strong>Retries</strong><span>${state.stats.retries}</span></div>
+    <div class="agent-line"><strong>Next policy</strong><span>${escapeHtml(adaptivePolicy())}</span></div>
+    <div class="agent-line"><strong>Saved AI missions</strong><span>${state.aiMissions.length}</span></div>
+  `;
+}
+
+function adaptivePolicy() {
+  const accuracy = state.stats.attempts ? state.stats.correct / state.stats.attempts : 1;
+  if (accuracy < 0.45) return "Decrease difficulty and recommend revision stages.";
+  if (state.stats.retries > state.stats.solved + 2) return "Generate debug-first missions with stronger hints.";
+  if (accuracy > 0.8 && state.stats.solved > 3) return "Increase difficulty and unlock automation puzzles.";
+  return "Keep balanced practice with one coding task and one explanation task.";
+}
+
+function generateAiMission() {
+  const weak = bestConcept(true);
+  const template = aiMissionTemplates[state.aiMissions.length % aiMissionTemplates.length];
+  const mission = template.replaceAll("{weak}", weak === "None yet" ? getPractice().topic : weak);
+  state.aiMissions.unshift({
+    title: "AI Generated Mission",
+    mission,
+    createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  });
+  state.aiMissions = state.aiMissions.slice(0, 8);
+  addHistory({
+    status: "AI Mission",
+    world: "Automation Lab",
+    level: state.aiMissions.length,
+    title: mission,
+  });
+  saveState();
+  renderAiLab();
+  renderHistory();
+  speak("AI Automation Lab generated a personalized mission.");
+  showToast(mission);
 }
 
 function getStageIndex(worldId = activeWorld.id) {
@@ -853,11 +930,19 @@ function nextHint(practice, result, judge) {
   const level = (state.hintLevels[key] ?? 0) + 1;
   state.hintLevels[key] = Math.min(level, 4);
   saveState();
-  if (judge.syntaxIssue) return judge.syntaxIssue;
-  if (level === 1) return `Small hint: ${practice.hint}`;
-  if (level === 2) return `Medium hint: include ${judge.missing[0] ?? practice.checks[0]} in your code.`;
-  if (level === 3) return `Full explanation: ${practice.explanation}`;
-  return `Solution: ${practice.starterCode.replace(/\n/g, " | ")}`;
+  if (judge.syntaxIssue) return `There is an error in your code. ${makeErrorFriendly(judge.syntaxIssue)}`;
+  if (level === 1) return `There is something missing. ${practice.hint}`;
+  if (level === 2) return `Check this part: add or fix ${judge.missing[0] ?? practice.checks[0]}.`;
+  if (level === 3) return `Easy explanation: ${practice.explanation}`;
+  return `One correct way is: ${practice.starterCode.replace(/\n/g, " | ")}`;
+}
+
+function makeErrorFriendly(error) {
+  if (error.includes("not defined")) return "Python thinks one word is a variable, but it has no value yet. If it is text, put it inside quotes.";
+  if (error.includes("variable names belong")) return "The variable name should be on the left side, and the value should be on the right side.";
+  if (error.includes("loop needs")) return "A loop needs an indented line under it, so Python knows what to repeat.";
+  if (error.includes("prototype")) return "This practice runner supports the basics here. Try using simple assignments, print(), if/else, loops, lists, or functions.";
+  return error;
 }
 
 function masteryRank(worldId) {
@@ -867,6 +952,9 @@ function masteryRank(worldId) {
 
 function renderLineExplanation(code, result, judge) {
   const lines = code.replace(/\r/g, "").split("\n").filter((line) => line.trim());
+  const status = judge.pass
+    ? `<div class="feedback-note success-note"><strong>No error found.</strong><span>Your code matches this task.</span></div>`
+    : `<div class="feedback-note error-note"><strong>There is an error.</strong><span>${escapeHtml(nextVisibleIssue(judge))}</span></div>`;
   const html = lines
     .map((line, index) => {
       const text = line.trim();
@@ -880,23 +968,28 @@ function renderLineExplanation(code, result, judge) {
       `;
     })
     .join("");
-  const missing = judge.missing.length ? `<p class="hint-copy">Missing objective pieces: ${judge.missing.map(escapeHtml).join(", ")}</p>` : "";
-  $("#lineExplanation").innerHTML = `${html || "<p>No code yet.</p>"}${missing}`;
+  $("#lineExplanation").innerHTML = `${status}${html || "<p>No code yet.</p>"}`;
+}
+
+function nextVisibleIssue(judge) {
+  if (judge.syntaxIssue) return makeErrorFriendly(judge.syntaxIssue);
+  if (judge.missing.length) return `This task needs: ${judge.missing.join(", ")}. Add that part and run again.`;
+  return "Check the task goal and try again.";
 }
 
 function explainLine(line) {
-  if (line.startsWith("print(")) return "Displays a value in the output console.";
-  if (/^\w+\s*=/.test(line)) return "Creates or updates a value in memory.";
-  if (line.startsWith("if ")) return "Checks a condition and runs the next block only when it is true.";
-  if (line.startsWith("elif ")) return "Checks another condition if the previous branch failed.";
-  if (line.startsWith("else")) return "Runs when the previous condition was false.";
-  if (line.startsWith("for ")) return "Repeats the indented block for each value in a sequence.";
-  if (line.startsWith("while ")) return "Repeats while the condition remains true.";
-  if (line.startsWith("def ")) return "Defines a reusable function.";
-  if (line.startsWith("return ")) return "Sends a value back from a function.";
-  if (line.startsWith("class ")) return "Defines a blueprint for objects.";
-  if (line.includes(".append(")) return "Adds a new item to a list.";
-  return "Python reads this line as part of the current program flow.";
+  if (line.startsWith("print(")) return "This shows something on the screen.";
+  if (/^\w+\s*=/.test(line)) return "This saves a value in a named box, called a variable.";
+  if (line.startsWith("if ")) return "This asks a yes/no question. If it is true, the indented code runs.";
+  if (line.startsWith("elif ")) return "This asks another question if the first one was false.";
+  if (line.startsWith("else")) return "This runs when the earlier question was false.";
+  if (line.startsWith("for ")) return "This repeats the indented code a set number of times.";
+  if (line.startsWith("while ")) return "This repeats while the condition is still true.";
+  if (line.startsWith("def ")) return "This creates a reusable block of code called a function.";
+  if (line.startsWith("return ")) return "This sends an answer back from a function.";
+  if (line.startsWith("class ")) return "This creates a blueprint for making objects.";
+  if (line.includes(".append(")) return "This adds a new item to the end of a list.";
+  return "Python reads this line from top to bottom.";
 }
 
 function renderAnalytics() {
@@ -1070,6 +1163,7 @@ function renderAll() {
   renderWorlds();
   renderSkillTree();
   renderLesson();
+  renderAiLab();
 }
 
 function initEvents() {
@@ -1103,6 +1197,7 @@ function initEvents() {
   $("#runBtn").addEventListener("click", runCode);
   $("#saveTaskBtn").addEventListener("click", saveCurrentTask);
   $("#resetBtn").addEventListener("click", resetProgress);
+  $("#generateMissionBtn").addEventListener("click", generateAiMission);
 
   $("#codeEditor").addEventListener("keydown", (event) => {
     if (event.key !== "Enter") return;

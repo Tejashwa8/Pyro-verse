@@ -76,6 +76,7 @@ button {
 .panel,
 .lesson-panel,
 .code-panel,
+.ai-lab,
 .architecture-band {
   border: 1px solid var(--line);
   background: linear-gradient(145deg, rgba(13, 29, 44, 0.82), rgba(8, 16, 28, 0.58));
@@ -640,6 +641,85 @@ h2 {
   margin-top: 18px;
 }
 
+.ai-lab {
+  margin-top: 18px;
+  padding: 20px;
+}
+
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.ai-system-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.ai-system-card h3 {
+  margin: 8px 0;
+}
+
+.ai-system-card p {
+  color: #c8dbe4;
+  line-height: 1.55;
+}
+
+.system-tag {
+  display: inline-flex;
+  padding: 5px 8px;
+  color: #061018;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  font: 800 0.75rem "JetBrains Mono", monospace;
+}
+
+.workflow-map,
+.agent-output,
+.memory-output {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.workflow-node,
+.agent-line {
+  position: relative;
+  padding: 10px;
+  border: 1px solid rgba(159, 216, 192, 0.18);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.workflow-node strong,
+.agent-line strong {
+  display: block;
+  color: var(--green);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.workflow-node span,
+.agent-line span {
+  display: block;
+  margin-top: 3px;
+  color: #cfeaf5;
+}
+
+.workflow-node i {
+  position: absolute;
+  left: 18px;
+  bottom: -9px;
+  width: 2px;
+  height: 8px;
+  background: rgba(159, 216, 192, 0.42);
+}
+
 .quest-visual {
   position: relative;
   min-height: 540px;
@@ -1006,6 +1086,33 @@ pre,
   padding-left: 8px;
 }
 
+.feedback-note {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: var(--radius);
+}
+
+.feedback-note strong {
+  font-family: "JetBrains Mono", monospace;
+}
+
+.feedback-note span {
+  color: #d8e9ef;
+  line-height: 1.5;
+}
+
+.error-note {
+  border: 1px solid rgba(255, 98, 125, 0.4);
+  background: rgba(255, 98, 125, 0.1);
+}
+
+.success-note {
+  border: 1px solid rgba(159, 216, 192, 0.36);
+  background: rgba(159, 216, 192, 0.08);
+}
+
 .analytics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1077,6 +1184,7 @@ pre,
   .topbar,
   .dashboard-grid,
   .quest-board,
+  .ai-grid,
   .architecture-band {
     grid-template-columns: 1fr;
   }
